@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from "react"
 import { MessageBubble } from "@/components/MessageBubble"
 import HistorySheet from "@/components/HistorySheet"
 import SettingsSheet from "@/components/SettingsSheet"
+import NotesSheet from "@/components/NotesSheet"
+import SidebarLeft from "@/components/SidebarLeft"
 import { useTopics } from "@/hooks/useTopics"
 import { useSettings } from "@/hooks/useSettings"
 import type { Message } from "@/types/chat"
@@ -14,6 +16,7 @@ export default function Page() {
   const { settings } = useSettings()
   const [openHistory, setOpenHistory] = useState(false)
   const [openSettings, setOpenSettings] = useState(false)
+  const [openNotes, setOpenNotes] = useState(false)
   const [currentTopicId, setCurrentTopicId] = useState<string | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
 
@@ -36,17 +39,26 @@ export default function Page() {
   const fontSizePx = useMemo(() => settings.fontSize === 'sm' ? 14 : settings.fontSize === 'lg' ? 17 : 15, [settings.fontSize])
 
   return (
-    <main className="flex min-h-[85dvh] flex-col gap-4">
+    <main className="min-h-[85dvh]">
       <ChatHeader onOpenHistory={() => setOpenHistory(true)} onOpenSettings={() => setOpenSettings(true)} />
 
-      <section
-        className="flex-1 space-y-4 overflow-y-auto rounded-2xl border border-white/10 bg-[#040b16]/60 p-4"
-        style={{ fontSize: `${fontSizePx}px` }}
-      >
-        {messages.map(m => <MessageBubble key={m.id} role={m.role} content={m.content} />)}
-      </section>
+      <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-[11rem_1fr]">
+        <SidebarLeft
+          onOpenNotes={() => setOpenNotes(true)}
+          onHome={() => { /* placeholder as requested */ }}
+          onJoin={() => { /* placeholder as requested */ }}
+        />
 
-      <ComposerBar onSend={handleSend} />
+        <div className="flex flex-col gap-4">
+          <section
+            className="flex-1 space-y-4 overflow-y-auto rounded-2xl border border-white/10 bg-[#040b16]/60 p-4"
+            style={{ fontSize: `${fontSizePx}px` }}
+          >
+            {messages.map(m => <MessageBubble key={m.id} role={m.role} content={m.content} />)}
+          </section>
+          <ComposerBar onSend={handleSend} />
+        </div>
+      </div>
 
       <HistorySheet
         open={openHistory}
@@ -63,7 +75,7 @@ export default function Page() {
         onCreateTopic={(title) => {
           const nt = createTopic(title)
           setCurrentTopicId(nt.id)
-          setMessages([])
+          setMessages(getMessages(nt.id))
           setOpenHistory(false)
         }}
       />
@@ -73,6 +85,8 @@ export default function Page() {
         onClose={() => setOpenSettings(false)}
         onClearAll={() => { clearAll(); setCurrentTopicId(null); setMessages([]); setOpenSettings(false); }}
       />
+
+      <NotesSheet open={openNotes} onClose={() => setOpenNotes(false)} />
     </main>
   )
 }
