@@ -2,7 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: dark; }
-html, body { height: 100%; }
-body { @apply text-white antialiased; background: radial-gradient(1200px 600px at 50% -10%, #0b1220 0%, #000 55%) fixed; }
-* { scrollbar-width: thin; }
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: #fff;
+  @apply antialiased;
+  background: radial-gradient(1200px 600px at 50% -10%, #0b1220 0%, #000 55%) fixed;
+}
+
+* {
+  scrollbar-width: thin;
+}
