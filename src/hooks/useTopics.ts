@@ -14,5 +14,6 @@ export function useTopics(){
   const getMessages=useCallback((tid:string)=>messagesMap[tid]??[],[messagesMap])
   const listTopics=useMemo(()=>[...topics].sort((a,b)=>b.lastAt-a.lastAt),[topics])
   const seedIfEmpty=useCallback(()=>{ if(topics.length===0){ const id=`t_${Math.random().toString(36).slice(2,9)}`; setTopics([{id,title:'Getting started',createdAt:now(),lastAt:now()}]); setMessagesMap({[id]:[{id:`m_${Math.random().toString(36).slice(2,9)}`,role:'mentor',type:'text',content:'Welcome — ask anything about trading or open History.',createdAt:now()}]}) } },[topics.length])
-  return { topics:listTopics, createTopic, deleteTopic, addMessage, getMessages, seedIfEmpty } as const
+  const clearAll=useCallback(()=>{ setTopics([]); setMessagesMap({}); try{ localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(MESSAGES_KEY); }catch{} },[])
+  return { topics:listTopics, createTopic, deleteTopic, addMessage, getMessages, seedIfEmpty, clearAll } as const
 }
