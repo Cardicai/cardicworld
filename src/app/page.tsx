@@ -45,8 +45,9 @@ export default function Page() {
       <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-[11rem_1fr]">
         <SidebarLeft
           onOpenNotes={() => setOpenNotes(true)}
-          onHome={() => { /* placeholder as requested */ }}
-          onJoin={() => { /* placeholder as requested */ }}
+          onHome={() => { /* TODO */ }}
+          onJoin={() => { /* TODO */ }}
+          onPlayGame={() => { /* TODO: open game panel later */ }}
         />
 
         <div className="flex flex-col gap-4">
