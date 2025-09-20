@@ -30,8 +30,13 @@ export default function Page(){
     <main className="flex min-h-[85dvh] flex-col gap-4">
       <header className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-4">
         <div className="flex items-center gap-3">
-          <div className="grid size-10 place-items-center rounded-xl bg-cardic-primary/20 ring-1 ring-cardic-primary/40"><div className="w-8 h-8 rounded-full bg-white/10"/></div>
-          <div><h1 className="text-lg font-semibold tracking-tight">CN‑GPT Mentor</h1><p className="text-xs text-white/60">Education only</p></div>
+          <div className="grid size-10 place-items-center rounded-xl bg-cardic.primary/20 ring-1 ring-cardic.primary/40">
+            <div className="w-8 h-8 rounded-full bg-white/10" />
+          </div>
+          <div>
+            <h1 className="text-lg font-semibold tracking-tight">CN World — AI Mentor</h1>
+            <p className="text-xs text-white/60">Education only · no financial advice</p>
+          </div>
         </div>
         <button onClick={()=>setOpenHistory(true)} className="rounded-md bg-white/5 px-3 py-2 text-sm">History</button>
       </header>
@@ -47,11 +52,13 @@ export default function Page(){
 
       <div className="sticky bottom-2">
         <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white p-2">
-          <button className="px-3">📎</button>
-          <button className="px-3">🎤</button>
+          <button className="px-3" title="Attach">📎</button>
+          <button className="px-3" title="Voice">🎤</button>
           <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'?send():null}
             placeholder="Ask the mentor..." className="flex-1 rounded-xl bg-white px-4 py-3 text-sm text-black outline-none placeholder:text-black/50"/>
-          <button onClick={send} className="grid size-10 place-items-center rounded-xl bg-cardic-primary/30 ring-1 ring-cardic-primary/40 active:scale-95 px-4 py-2 text-white">➤</button>
+          <button onClick={send}
+            className="grid size-10 place-items-center rounded-xl bg-cardic.primary/30 ring-1 ring-cardic.primary/40 active:scale-95 px-4 py-2 text-white"
+            title="Send">➤</button>
         </div>
       </div>
 
