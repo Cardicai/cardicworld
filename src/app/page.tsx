@@ -10,6 +10,8 @@ import { useSettings } from "@/hooks/useSettings"
 import type { Message } from "@/types/chat"
 import ChatHeader from "@/components/ChatHeader"
 import ComposerBar from "@/components/ComposerBar"
+import ChartSheet from "@/components/ChartSheet"
+import { CandlestickChart } from "lucide-react"
 
 export default function Page() {
   const { topics, createTopic, deleteTopic, addMessage, getMessages, seedIfEmpty, clearAll } = useTopics()
@@ -17,6 +19,7 @@ export default function Page() {
   const [openHistory, setOpenHistory] = useState(false)
   const [openSettings, setOpenSettings] = useState(false)
   const [openNotes, setOpenNotes] = useState(false)
+  const [openChart, setOpenChart] = useState(false)
   const [currentTopicId, setCurrentTopicId] = useState<string | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
 
@@ -40,7 +43,11 @@ export default function Page() {
 
   return (
     <main className="min-h-[85dvh]">
-      <ChatHeader onOpenHistory={() => setOpenHistory(true)} onOpenSettings={() => setOpenSettings(true)} />
+      <ChatHeader
+        onOpenHistory={() => setOpenHistory(true)}
+        onOpenSettings={() => setOpenSettings(true)}
+        onOpenChart={() => setOpenChart(true)}
+      />
 
       <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-[11rem_1fr]">
         <SidebarLeft
@@ -87,6 +94,16 @@ export default function Page() {
       />
 
       <NotesSheet open={openNotes} onClose={() => setOpenNotes(false)} />
+      <ChartSheet open={openChart} onClose={() => setOpenChart(false)} symbol="OANDA:XAUUSD" interval="15" />
+
+      <button
+        onClick={() => setOpenChart(true)}
+        className="fixed bottom-24 right-4 grid size-12 place-items-center rounded-full bg-cardic-primary/20 ring-1 ring-cardic-primary/60 shadow-lg md:hidden"
+        title="Open Chart"
+        type="button"
+      >
+        <CandlestickChart className="size-6 text-cardic-primary" />
+      </button>
     </main>
   )
 }
