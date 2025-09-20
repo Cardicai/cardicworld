@@ -1,7 +1,15 @@
 "use client"
 import { Clock3, Settings } from "lucide-react"
 
-export default function ChatHeader({ onOpenHistory }: { onOpenHistory: () => void }) {
+export default function ChatHeader({
+  onOpenHistory,
+  onOpenSettings,
+  mentorName,
+}: {
+  onOpenHistory: () => void
+  onOpenSettings: () => void
+  mentorName: string
+}) {
   return (
     <header className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
       <div className="flex items-center gap-3">
@@ -9,7 +17,7 @@ export default function ChatHeader({ onOpenHistory }: { onOpenHistory: () => voi
           {/* simple avatar ring */}
           <div className="size-8 rounded-full bg-cardic-primary/20" />
         </div>
-        <h1 className="text-lg font-semibold tracking-tight">AI Trading Mentor</h1>
+        <h1 className="text-lg font-semibold tracking-tight">{mentorName}</h1>
       </div>
 
       <div className="flex items-center gap-2">
@@ -21,6 +29,7 @@ export default function ChatHeader({ onOpenHistory }: { onOpenHistory: () => voi
           <Clock3 className="size-4" /> History
         </button>
         <button
+          onClick={onOpenSettings}
           className="grid size-9 place-items-center rounded-full border border-white/15 bg-white/5"
           title="Settings"
         >
