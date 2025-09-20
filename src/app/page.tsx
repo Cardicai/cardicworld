@@ -36,7 +36,7 @@ export default function Page(){
         <button onClick={()=>setOpenHistory(true)} className="rounded-md bg-white/5 px-3 py-2 text-sm">History</button>
       </header>
 
-      <section className="flex-1 space-y-4 overflow-y-auto rounded-2xl border border-white/10 bg-black/20 p-4">
+      <section className="flex-1 space-y-4 overflow-y-auto rounded-2xl border border-white/10 bg-[#040b16]/60 p-4">
         {messages.length===0 && <div className="text-white/60">No messages yet. Try typing below.</div>}
         {messages.map(m=>(
           <div key={m.id} className={m.role==='user'?'flex justify-end':'flex justify-start'}>
