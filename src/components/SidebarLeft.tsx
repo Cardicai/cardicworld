@@ -12,6 +12,14 @@ export default function SidebarLeft({
         <button className={base} onClick={onHome}>Home</button>
         <button className={base} onClick={onOpenNotes}>Notes</button>
         <button className={base} onClick={onJoin}>Join Club</button>
+        <button
+          className={base}
+          onClick={() => {
+            console.log("Play Game clicked")
+          }}
+        >
+          Play Game
+        </button>
       </div>
     </aside>
   )
