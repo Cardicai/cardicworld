@@ -4,5 +4,45 @@
 
 :root { color-scheme: dark; }
 html, body { height: 100%; }
-body { @apply text-white antialiased; background: radial-gradient(1200px 600px at 50% -10%, #0b1220 0%, #000 55%) fixed; }
 * { scrollbar-width: thin; }
+
+/* Page backdrop = animated galaxy (ONLY outside the chat container) */
+body {
+  color: #fff;
+  background: #000;
+}
+
+/* drifting nebula layers */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20% -10%;
+  z-index: -2;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(20,40,90,0.75) 0%, rgba(0,0,0,0.95) 60%),
+    radial-gradient(900px 500px at 10% 120%, rgba(0,120,255,0.22) 0%, rgba(0,0,0,0) 60%),
+    radial-gradient(800px 450px at 90% 110%, rgba(10,180,255,0.18) 0%, rgba(0,0,0,0) 60%);
+  animation: galaxy-drift 42s ease-in-out infinite alternate;
+}
+
+/* subtle starfield + twinkle */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px);
+  background-size: 2px 2px;   /* tiny stars */
+  opacity: 0.25;
+  animation: twinkle 7s ease-in-out infinite alternate;
+}
+
+@keyframes galaxy-drift {
+  0%   { transform: translate3d(0,0,0) scale(1); }
+  100% { transform: translate3d(-3%,2%,0) scale(1.05); }
+}
+@keyframes twinkle {
+  from { opacity: .18; }
+  to   { opacity: .32; }
+}
