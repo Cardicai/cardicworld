@@ -13,11 +13,11 @@ export default function ChatHeader({ onOpenHistory }: { onOpenHistory: () => voi
       </div>
 
       <div className="flex items-center gap-2">
-        <button
-          onClick={onOpenHistory}
-          className="inline-flex items-center gap-2 rounded-full border border-cardic-primary/50 bg-cardic-primary/10 px-3 py-2 text-sm"
-          title="Past Topics"
-        >
+          <button
+            onClick={onOpenHistory}
+            className="inline-flex items-center gap-2 rounded-full border border-cardic-primary/50 bg-cardic-primary/10 px-3 py-2 text-sm"
+            title="Past Topics"
+          >
           <Clock3 className="size-4" /> History
         </button>
         <button

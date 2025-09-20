@@ -61,7 +61,7 @@ export default function Page() {
     <main className="flex min-h-[85dvh] flex-col gap-4">
       <ChatHeader onOpenHistory={() => setOpenHistory(true)} />
 
-      <section className="flex-1 space-y-4 overflow-y-auto rounded-2xl border border-white/10 bg-black/20 p-4">
+      <section className="flex-1 space-y-4 overflow-y-auto rounded-2xl border border-white/10 bg-[#040b16]/60 p-4">
         {messages.map((m) => (
           <MessageBubble key={m.id} role={m.role} content={m.content} />
         ))}

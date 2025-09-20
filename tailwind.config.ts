@@ -5,16 +5,8 @@ const config: Config = {
   content: ["./src/pages/**/*.{ts,tsx}", "./src/components/**/*.{ts,tsx}", "./src/app/**/*.{ts,tsx}"],
   theme: {
     extend: {
-      colors: {
-        cardic: {
-          bg: "#020617",
-          primary: "#16B5FF", // neon blue
-          gold: "#F5C451", // accent (we'll use sparingly)
-        },
-      },
-      boxShadow: {
-        glow: "0 0 30px rgba(22,181,255,0.25)",
-      },
+      colors: { cardic: { bg: "#020617", primary: "#16B5FF", gold: "#F5C451" } },
+      boxShadow: { glow: "0 0 30px rgba(22,181,255,0.25)" },
     },
   },
   plugins: [],
