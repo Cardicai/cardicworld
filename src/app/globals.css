@@ -2,26 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: dark;
-}
+:root { color-scheme: dark; }
+html, body { height: 100%; }
+* { scrollbar-width: thin; }
 
-html,
-body {
-  height: 100%;
-}
+/* Base page color (chat box sits on top of this) */
+body { color: #fff; background: #000; }
 
-body {
-  @apply text-white antialiased;
-  /* Galaxy backdrop */
+/* --- LIVE GALAXY OUTSIDE THE CHAT --- */
+body::before{
+  content:""; position:fixed; inset:-20% -10%; z-index:-2;
   background:
-    radial-gradient(1200px 600px at 50% -10%, rgba(14, 26, 52, 0.85) 0%, rgba(1, 7, 15, 0.95) 60%),
-    radial-gradient(800px 400px at 10% 120%, rgba(20, 40, 80, 0.35) 0%, rgba(0, 0, 0, 0) 60%),
-    radial-gradient(700px 350px at 90% 110%, rgba(0, 80, 160, 0.25) 0%, rgba(0, 0, 0, 0) 60%),
-    #000;
-  background-attachment: fixed;
+    radial-gradient(1200px 700px at 50% -10%, rgba(20,40,90,.75) 0%, rgba(0,0,0,.95) 60%),
+    radial-gradient(900px 500px at 10% 120%, rgba(0,120,255,.22) 0%, rgba(0,0,0,0) 60%),
+    radial-gradient(800px 450px at 90% 110%, rgba(10,180,255,.18) 0%, rgba(0,0,0,0) 60%);
+  animation: galaxy-drift 42s ease-in-out infinite alternate;
 }
 
-* {
-  scrollbar-width: thin;
+/* Star layer */
+body::after{
+  content:""; position:fixed; inset:0; z-index:-1;
+  background-image: radial-gradient(rgba(255,255,255,.16) 1px, transparent 1px);
+  background-size: 2px 2px; opacity:.25; animation: twinkle 7s ease-in-out infinite alternate;
 }
+
+@keyframes galaxy-drift{0%{transform:translate3d(0,0,0) scale(1)}100%{transform:translate3d(-3%,2%,0) scale(1.05)}}
+@keyframes twinkle{from{opacity:.18}to{opacity:.32}}
