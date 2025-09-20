@@ -1,64 +1,92 @@
-'use client'
-import { useEffect, useState } from 'react'
-import { MessageBubble } from '@/components/MessageBubble'
-import HistorySheet from '@/components/HistorySheet'
-import { useTopics } from '@/hooks/useTopics'
-import type { Message } from '@/types/chat'
+"use client"
+import { useEffect, useState } from "react"
+import ChatHeader from "@/components/ChatHeader"
+import ComposerBar from "@/components/ComposerBar"
+import HistorySheet from "@/components/HistorySheet"
+import { MessageBubble } from "@/components/MessageBubble"
+import { useTopics } from "@/hooks/useTopics"
+import type { Message } from "@/types/chat"
 
-export default function Page(){
+export default function Page() {
   const { topics, createTopic, deleteTopic, addMessage, getMessages, seedIfEmpty } = useTopics()
-  const [openHistory,setOpenHistory]=useState(false)
-  const [currentTopicId,setCurrentTopicId]=useState<string|null>(null)
-  const [messages,setMessages]=useState<Message[]>([])
-  const [input,setInput]=useState('')
+  const [openHistory, setOpenHistory] = useState(false)
+  const [currentTopicId, setCurrentTopicId] = useState<string | null>(null)
+  const [messages, setMessages] = useState<Message[]>([])
 
-  useEffect(()=>{ seedIfEmpty() },[seedIfEmpty])
-  useEffect(()=>{ const t=topics[0]; if(t && !currentTopicId){ setCurrentTopicId(t.id); setMessages(getMessages(t.id)) }},[topics,currentTopicId,getMessages])
-  useEffect(()=>{ if(currentTopicId) setMessages(getMessages(currentTopicId)) },[currentTopicId,getMessages])
+  useEffect(() => {
+    seedIfEmpty()
+  }, [seedIfEmpty])
 
-  function send(){
-    if(!input.trim() || !currentTopicId) return
-    const m:Message={ id:`m_${Math.random().toString(36).slice(2,9)}`, role:'user', type:'text', content:input.trim(), createdAt:Date.now() }
-    addMessage(currentTopicId,m); setInput(''); setMessages(p=>[...p,m])
-    setTimeout(()=>{
-      const r:Message={ id:`m_${Math.random().toString(36).slice(2,9)}`, role:'mentor', type:'text', content:`Nice question: "${m.content}". (Placeholder reply)`, createdAt:Date.now() }
-      addMessage(currentTopicId,r); setMessages(p=>[...p,r])
-    },700)
+  useEffect(() => {
+    const t = topics[0]
+    if (t && !currentTopicId) {
+      setCurrentTopicId(t.id)
+      setMessages(getMessages(t.id))
+    }
+  }, [topics, currentTopicId, getMessages])
+
+  useEffect(() => {
+    if (currentTopicId) setMessages(getMessages(currentTopicId))
+  }, [currentTopicId, getMessages])
+
+  function handleSend(text: string) {
+    if (!currentTopicId) return
+    const m: Message = {
+      id: crypto.randomUUID(),
+      role: "user",
+      type: "text",
+      content: text,
+      createdAt: Date.now(),
+    }
+    addMessage(currentTopicId, m)
+    setMessages((p) => [...p, m])
+    // placeholder mentor reply
+    setTimeout(() => {
+      const r: Message = {
+        id: crypto.randomUUID(),
+        role: "mentor",
+        type: "text",
+        content:
+          `Technical analysis involves analyzing past price and volume to spot patterns and make decisions.\n\n` +
+          `**Steps** — 1) Identify trend 2) Mark key levels 3) Define invalidation.\n` +
+          `**Risk note** — Education only.`,
+        createdAt: Date.now(),
+      }
+      addMessage(currentTopicId, r)
+      setMessages((p) => [...p, r])
+    }, 600)
   }
 
   return (
     <main className="flex min-h-[85dvh] flex-col gap-4">
-      <header className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-4">
-        <div className="flex items-center gap-3">
-          <div className="grid size-10 place-items-center rounded-xl bg-cardic-primary/20 ring-1 ring-cardic-primary/40"><div className="w-8 h-8 rounded-full bg-white/10"/></div>
-          <div><h1 className="text-lg font-semibold tracking-tight">CN‑GPT Mentor</h1><p className="text-xs text-white/60">Education only</p></div>
-        </div>
-        <button onClick={()=>setOpenHistory(true)} className="rounded-md bg-white/5 px-3 py-2 text-sm">History</button>
-      </header>
+      <ChatHeader onOpenHistory={() => setOpenHistory(true)} />
 
       <section className="flex-1 space-y-4 overflow-y-auto rounded-2xl border border-white/10 bg-black/20 p-4">
-        {messages.length===0 && <div className="text-white/60">No messages yet. Try typing below.</div>}
-        {messages.map(m=>(
-          <div key={m.id} className={m.role==='user'?'flex justify-end':'flex justify-start'}>
-            <div className="max-w-[70%]"><MessageBubble role={m.role} content={m.content}/></div>
-          </div>
+        {messages.map((m) => (
+          <MessageBubble key={m.id} role={m.role} content={m.content} />
         ))}
       </section>
 
-      <div className="sticky bottom-2">
-        <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white p-2">
-          <button className="px-3">📎</button>
-          <button className="px-3">🎤</button>
-          <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'?send():null}
-            placeholder="Ask the mentor..." className="flex-1 rounded-xl bg-white px-4 py-3 text-sm text-black outline-none placeholder:text-black/50"/>
-          <button onClick={send} className="grid size-10 place-items-center rounded-xl bg-cardic-primary/30 ring-1 ring-cardic-primary/40 active:scale-95 px-4 py-2 text-white">➤</button>
-        </div>
-      </div>
+      <ComposerBar onSend={handleSend} />
 
-      <HistorySheet open={openHistory} onClose={()=>setOpenHistory(false)} topics={topics}
-        onSelectTopic={(t)=>{ setCurrentTopicId(t.id); setOpenHistory(false); setMessages(getMessages(t.id)) }}
-        onDeleteTopic={(id)=>{ deleteTopic(id); if(currentTopicId===id) setCurrentTopicId(null) }}
-        onCreateTopic={(title)=>{ const nt=createTopic(title); setCurrentTopicId(nt.id); setOpenHistory(false) }}
+      <HistorySheet
+        open={openHistory}
+        onClose={() => setOpenHistory(false)}
+        topics={topics}
+        onSelectTopic={(t) => {
+          setCurrentTopicId(t.id)
+          setOpenHistory(false)
+          setMessages(getMessages(t.id))
+        }}
+        onDeleteTopic={(id) => {
+          deleteTopic(id)
+          if (currentTopicId === id) setCurrentTopicId(null)
+        }}
+        onCreateTopic={(title) => {
+          const nt = createTopic(title)
+          setCurrentTopicId(nt.id)
+          setOpenHistory(false)
+        }}
       />
     </main>
   )

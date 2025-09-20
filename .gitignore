@@ -1,0 +1,5 @@
+node_modules
+.next
+
+# Nested workspace
+cngpt-online/node_modules
