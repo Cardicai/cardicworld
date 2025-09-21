@@ -8,11 +8,6 @@ type Settings = {
   persona?: "coach" | "analyst" | "risk"
 }
 
-function modelFromEnv() {
-  // toggle via Vercel env: NEXT_PUBLIC_MENTOR_TIER = "pro" -> gpt-5
-  return process.env.NEXT_PUBLIC_MENTOR_TIER === "pro" ? "gpt-5" : "gpt-5-mini"
-}
-
 export async function POST(req: NextRequest) {
   try {
     const { messages, settings }: {
@@ -39,7 +34,7 @@ export async function POST(req: NextRequest) {
     ].join(" ")
 
     const body = {
-      model: modelFromEnv(), // gpt-5-mini by default, gpt-5 if TIER=pro
+      model: "gpt-5-mini", // always use GPT-5 mini
       messages: [{ role: "system", content: system }, ...messages],
       temperature: 0.7,
     }
@@ -54,8 +49,18 @@ export async function POST(req: NextRequest) {
     })
 
     if (!resp.ok) {
-      const errText = await resp.text()
-      return new Response(JSON.stringify({ error: errText }), { status: 500 })
+      let errorMessage: string
+      try {
+        const errorData = await resp.json()
+        errorMessage = errorData?.error?.message ?? JSON.stringify(errorData)
+      } catch {
+        errorMessage = await resp.text()
+      }
+
+      return new Response(
+        JSON.stringify({ error: errorMessage }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      )
     }
 
     const data = await resp.json()
