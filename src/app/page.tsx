@@ -24,16 +24,62 @@ export default function Page() {
   useEffect(() => { const t = topics[0]; if (t && !currentTopicId) { setCurrentTopicId(t.id); setMessages(getMessages(t.id)) } }, [topics, currentTopicId, getMessages])
   useEffect(() => { if (currentTopicId) setMessages(getMessages(currentTopicId)) }, [currentTopicId, getMessages])
 
-  function handleSend(text: string) {
+  async function handleSend(text: string) {
     if (!currentTopicId) return
-    const m: Message = { id: crypto.randomUUID(), role: "user", type: "text", content: text, createdAt: Date.now() }
-    addMessage(currentTopicId, m); setMessages(p => [...p, m])
-    setTimeout(() => {
-      const r: Message = { id: crypto.randomUUID(), role: "mentor", type: "text",
-        content: `Technical analysis involves analyzing past price and volume ...\n\n**Risk note** — Education only.`,
-        createdAt: Date.now() }
-      setMessages(p => [...p, r]); addMessage(currentTopicId, r)
-    }, 500)
+    const topicId = currentTopicId
+    const userMessage: Message = {
+      id: crypto.randomUUID(),
+      role: "user",
+      type: "text",
+      content: text,
+      createdAt: Date.now(),
+    }
+    addMessage(topicId, userMessage)
+    setMessages(prev => [...prev, userMessage])
+
+    const historyForApi = [...messages, userMessage].map(msg => ({
+      role: msg.role === "mentor" ? "assistant" : "user",
+      content: msg.content,
+    }))
+
+    let replyContent = "Mentor error: Unknown"
+    try {
+      const res = await fetch("/api/mentor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: historyForApi,
+          settings: { responseStyle: settings.responseStyle },
+        }),
+      })
+
+      const raw = await res.text()
+      let json: any = null
+      try {
+        json = raw ? JSON.parse(raw) : null
+      } catch {
+        json = null
+      }
+
+      const replyText =
+        res.ok && json?.content
+          ? json.content
+          : `Mentor error: ${json?.error || json?.responses_error || json?.chat_error || raw || res.status}`
+
+      replyContent = replyText
+    } catch (err) {
+      replyContent = `Mentor error: ${err instanceof Error ? err.message : String(err)}`
+    }
+
+    const replyMessage: Message = {
+      id: crypto.randomUUID(),
+      role: "mentor",
+      type: "text",
+      content: replyContent,
+      createdAt: Date.now(),
+    }
+    addMessage(topicId, replyMessage)
+    setMessages(prev => [...prev, replyMessage])
   }
 
   const fontSizePx = useMemo(() => settings.fontSize === 'sm' ? 14 : settings.fontSize === 'lg' ? 17 : 15, [settings.fontSize])
