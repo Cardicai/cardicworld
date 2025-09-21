@@ -24,16 +24,59 @@ export default function Page() {
   useEffect(() => { const t = topics[0]; if (t && !currentTopicId) { setCurrentTopicId(t.id); setMessages(getMessages(t.id)) } }, [topics, currentTopicId, getMessages])
   useEffect(() => { if (currentTopicId) setMessages(getMessages(currentTopicId)) }, [currentTopicId, getMessages])
 
-  function handleSend(text: string) {
+  async function handleSend(text: string) {
     if (!currentTopicId) return
-    const m: Message = { id: crypto.randomUUID(), role: "user", type: "text", content: text, createdAt: Date.now() }
-    addMessage(currentTopicId, m); setMessages(p => [...p, m])
-    setTimeout(() => {
-      const r: Message = { id: crypto.randomUUID(), role: "mentor", type: "text",
-        content: `Technical analysis involves analyzing past price and volume ...\n\n**Risk note** — Education only.`,
-        createdAt: Date.now() }
-      setMessages(p => [...p, r]); addMessage(currentTopicId, r)
-    }, 500)
+
+    const userMsg: Message = {
+      id: crypto.randomUUID(),
+      role: "user",
+      type: "text",
+      content: text,
+      createdAt: Date.now(),
+    }
+    addMessage(currentTopicId, userMsg)
+    setMessages(p => [...p, userMsg])
+
+    try {
+      const res = await fetch("/api/mentor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: text }],
+          settings: {
+            mentorName: settings.mentorName,
+            responseStyle: settings.responseStyle,
+            persona: "coach",
+          },
+        }),
+      })
+
+      const json = await res.json()
+      const replyText =
+        res.ok && json?.content
+          ? json.content
+          : `Mentor error: ${json?.error || res.status}`
+
+      const mentorMsg: Message = {
+        id: crypto.randomUUID(),
+        role: "mentor",
+        type: "text",
+        content: replyText,
+        createdAt: Date.now(),
+      }
+      setMessages(p => [...p, mentorMsg])
+      addMessage(currentTopicId, mentorMsg)
+    } catch (err: any) {
+      const fallback: Message = {
+        id: crypto.randomUUID(),
+        role: "mentor",
+        type: "text",
+        content: "Network error — please try again.",
+        createdAt: Date.now(),
+      }
+      setMessages(p => [...p, fallback])
+      addMessage(currentTopicId, fallback)
+    }
   }
 
   const fontSizePx = useMemo(() => settings.fontSize === 'sm' ? 14 : settings.fontSize === 'lg' ? 17 : 15, [settings.fontSize])
