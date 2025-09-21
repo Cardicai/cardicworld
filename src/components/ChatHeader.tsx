@@ -10,9 +10,6 @@ export default function ChatHeader({
   onOpenHistory: () => void
   onOpenSettings: () => void
 }) {
-  const pillButton =
-    "inline-flex items-center gap-2 rounded-full border border-cardic-primary/50 " +
-    "bg-cardic-primary/10 px-3 py-2 text-sm"
 
   return (
     <header className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
@@ -24,10 +21,17 @@ export default function ChatHeader({
       </div>
 
       <div className="flex items-center gap-2">
-        <Link href="/chart" className={pillButton} title="Open Fullscreen Chart">
+        <Link
+          href="/chart"
+          className="inline-flex items-center gap-2 rounded-full border border-cardic-primary/50 bg-cardic-primary/10 px-3 py-2 text-sm"
+          title="Open Fullscreen Chart"
+        >
           <CandlestickChart className="size-4" /> Chart
         </Link>
-        <button onClick={onOpenHistory} className={pillButton} title="History">
+        <button
+          onClick={onOpenHistory}
+          className="inline-flex items-center gap-2 rounded-full border border-cardic-primary/50 bg-cardic-primary/10 px-3 py-2 text-sm"
+        >
           <Clock3 className="size-4" /> History
         </button>
         <button
