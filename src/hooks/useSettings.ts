@@ -5,10 +5,17 @@ export type Settings = {
   theme: 'galaxy' | 'plain'
   fontSize: 'sm' | 'md' | 'lg'
   responseStyle: 'concise' | 'normal' | 'detailed'
+  mentorName: string
+  persona?: 'coach' | 'analyst' | 'risk'
 }
 
 const KEY = 'cn_settings_v1'
-const DEFAULTS: Settings = { theme: 'galaxy', fontSize: 'md', responseStyle: 'normal' }
+const DEFAULTS: Settings = {
+  theme: 'galaxy',
+  fontSize: 'md',
+  responseStyle: 'normal',
+  mentorName: 'AI Trading Mentor',
+}
 
 let currentSettings: Settings = DEFAULTS
 const listeners = new Set<() => void>()
