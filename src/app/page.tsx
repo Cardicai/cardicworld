@@ -26,14 +26,53 @@ export default function Page() {
 
   function handleSend(text: string) {
     if (!currentTopicId) return
-    const m: Message = { id: crypto.randomUUID(), role: "user", type: "text", content: text, createdAt: Date.now() }
-    addMessage(currentTopicId, m); setMessages(p => [...p, m])
-    setTimeout(() => {
-      const r: Message = { id: crypto.randomUUID(), role: "mentor", type: "text",
-        content: `Technical analysis involves analyzing past price and volume ...\n\n**Risk note** — Education only.`,
-        createdAt: Date.now() }
-      setMessages(p => [...p, r]); addMessage(currentTopicId, r)
-    }, 500)
+    const userMessage: Message = {
+      id: crypto.randomUUID(),
+      role: "user",
+      type: "text",
+      content: text,
+      createdAt: Date.now(),
+    }
+    addMessage(currentTopicId, userMessage)
+    setMessages((prev) => [...prev, userMessage])
+
+    const history = [...messages, userMessage].map((msg) => ({
+      role: msg.role === "mentor" ? "assistant" : "user",
+      content: msg.content,
+    }))
+
+    void (async () => {
+      try {
+        const res = await fetch("/api/mentor", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: history }),
+        })
+        const json = await res.json()
+        const replyText = json?.content
+          ? json.content
+          : `Mentor error: ${json?.error || json?.responses_error || json?.chat_error || "unknown"}`
+        const reply: Message = {
+          id: crypto.randomUUID(),
+          role: "mentor",
+          type: "text",
+          content: replyText,
+          createdAt: Date.now(),
+        }
+        setMessages((prev) => [...prev, reply])
+        addMessage(currentTopicId, reply)
+      } catch (error: any) {
+        const fallback: Message = {
+          id: crypto.randomUUID(),
+          role: "mentor",
+          type: "text",
+          content: `Mentor error: ${error?.message || String(error) || "unknown"}`,
+          createdAt: Date.now(),
+        }
+        setMessages((prev) => [...prev, fallback])
+        addMessage(currentTopicId, fallback)
+      }
+    })()
   }
 
   const fontSizePx = useMemo(() => settings.fontSize === 'sm' ? 14 : settings.fontSize === 'lg' ? 17 : 15, [settings.fontSize])
